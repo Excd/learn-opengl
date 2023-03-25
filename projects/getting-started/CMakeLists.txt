@@ -14,10 +14,9 @@ project ("getting-started")
 # Variables
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
 
+# OpenGL
 find_package(OpenGL REQUIRED)
-
 include_directories(${OPENGL_INCLUDE_DIRS})
-link_directories(lib)
 
 # GLFW
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
