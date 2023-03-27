@@ -1,4 +1,5 @@
-﻿# CMakeList.txt : CMake project for getting-started.
+﻿# CMakeList.txt : Custom CMake for LearnOpenGL tutorial projects. 
+# LearnOpenGL	: https://learnopengl.com/
 cmake_minimum_required (VERSION 3.12)
 
 # Enable Hot Reload for MSVC compilers if supported.
