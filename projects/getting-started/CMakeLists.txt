@@ -1,7 +1,5 @@
-﻿# CMakeList.txt : CMake project for getting-started, include source and define
-# project specific logic here.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿# CMakeList.txt : CMake project for getting-started.
+cmake_minimum_required (VERSION 3.12)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -9,6 +7,7 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
+# Project
 project ("getting-started")
 
 # Variables
@@ -29,12 +28,11 @@ add_library(glad ${LIB_DIR}/glad/include/glad/glad.h ${LIB_DIR}/glad/src/glad.c)
 target_include_directories(glad PUBLIC ${LIB_DIR}/glad/include)
 
 # Add source to this project's executable.
-set(PROJECT_SOURCE "src/main.cpp" "src/main.h")
+set(PROJECT_SOURCE "src/main.cpp" )
 add_executable (getting-started ${PROJECT_SOURCE})
 target_link_libraries(getting-started PRIVATE ${OPENGL_LIBRARIES} glfw glad)
 
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET getting-started PROPERTY CXX_STANDARD 20)
-endif()
+# Set C++ standard.
+set_property(TARGET getting-started PROPERTY CXX_STANDARD 20)
 
 # TODO: Add tests and install targets if needed.
