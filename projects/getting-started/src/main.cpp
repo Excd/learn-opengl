@@ -1,12 +1,13 @@
 ﻿#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "main.h"
+int main(int argc, char *argv[]) {
+	glfwInit();	// Initialize GLFW.
 
-using namespace std;
+	// Configure GLFW version and profile.
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-int main()
-{
-	cout << "Hello CMake." << endl;
 	return 0;
 }
