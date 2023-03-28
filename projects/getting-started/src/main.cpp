@@ -3,6 +3,7 @@
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void processInput(GLFWwindow *window);
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]) {
 
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
-		glfwSwapBuffers(window);	// Swap window frame data buffers.
+		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT);	// Clear screen.
 
 		// Render commands here.
@@ -61,4 +62,10 @@ int main(int argc, char *argv[]) {
 // Ensures viewport matches window dimensions.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+// Input handling.
+void processInput(GLFWwindow *window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, true);
 }
