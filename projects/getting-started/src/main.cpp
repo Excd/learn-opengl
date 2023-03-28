@@ -39,10 +39,17 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set screen clear color.
+
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		glfwSwapBuffers(window);	// Swap window frame data buffers.
-		glfwPollEvents();			// Poll for IO events.
+		glClear(GL_COLOR_BUFFER_BIT);	// Clear screen.
+
+		// Render commands here.
+
+		glfwPollEvents();				// Poll for IO events.
+		glfwSwapBuffers(window);		// Swap window frame data buffers.
 	}
 
 	glfwTerminate(); // Terminate GLFW and free resources.
