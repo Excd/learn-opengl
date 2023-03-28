@@ -8,6 +8,19 @@ void processInput(GLFWwindow *window);
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
+// Temporary vertex shader code.
+const char *vertexShaderSource = "#version 330 core\n"
+	"layout (location = 0) in vec3 aPos;\n"
+	"void main() {\n"
+	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
+// Temporary fragment shader code.
+const char *fragmentShaderSource = "#version 330 core\n"
+	"out vec4 FragColor;\n"
+	"void main() {\n"
+	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\n\0";
+
 int main(int argc, char *argv[]) {
 	// Initialize GLFW and configure OpenGL version and profile.
 	glfwInit();
@@ -29,7 +42,6 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -40,6 +52,71 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	// Shader error check variables.
+	int success;
+	char infoLog[512];
+
+	// Create vertex shader.
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+	// Check for shader compile errors.
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	// Create fragment shader.
+	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+	// Check for shader compile errors.
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success) {
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+
+	// Create shader program.
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+	// Attach shaders to program and link.
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+	// Check for linking errors.
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	}
+	// Cleanup shaders.
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	// Define vertex data.
+	float vertices[] = {
+		-0.5f, -0.5f, 0.0f, // Left.
+		 0.5f, -0.5f, 0.0f, // Right.
+		 0.0f,  0.5f, 0.0f  // Top.
+	};
+
+	// Create buffer objects.
+	unsigned int VBO, VAO;
+	glGenBuffers(1, &VBO);		// Generate 1 buffer and store ID in VBO.
+	glGenVertexArrays(1, &VAO);	// Generate 1 VAO and store ID in VAO.
+
+	glBindVertexArray(VAO);		// Bind VAO.
+	
+	// Bind VBO to GL_ARRAY_BUFFER target and copy vertex data to buffer.
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Specify how OpenGL should interpret VBO data.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set screen clear color.
 
 	// Main render loop.
@@ -48,9 +125,12 @@ int main(int argc, char *argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT);	// Clear screen.
 
 		// Render commands here.
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 
-		glfwPollEvents();				// Poll for IO events.
 		glfwSwapBuffers(window);		// Swap window frame data buffers.
+		glfwPollEvents();				// Poll for IO events.
 	}
 
 	glfwTerminate(); // Terminate GLFW and free resources.
