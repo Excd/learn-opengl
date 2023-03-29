@@ -10,16 +10,16 @@ const unsigned int WINDOW_HEIGHT = 600;
 
 // Temporary vertex shader code.
 const char *vertexShaderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"void main() {\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-	"}\0";
+"layout (location = 0) in vec3 aPos;\n"
+"void main() {\n"
+"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
 // Temporary fragment shader code.
 const char *fragmentShaderSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"void main() {\n"
-	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-	"}\n\0";
+"out vec4 FragColor;\n"
+"void main() {\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n\0";
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW and configure OpenGL version and profile.
@@ -97,37 +97,50 @@ int main(int argc, char *argv[]) {
 
 	// Define vertex data.
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // Left.
-		 0.5f, -0.5f, 0.0f, // Right.
-		 0.0f,  0.5f, 0.0f  // Top.
+		 0.5f,  0.5f, 0.0f, // Top right.
+		 0.5f, -0.5f, 0.0f, // Bottom right.
+		-0.5f, -0.5f, 0.0f, // Bottom left.
+		-0.5f,  0.5f, 0.0f  // Top left.
+	};
+
+	// Define indices.
+	unsigned int indices[] = {
+		0, 1, 3, // First triangle.
+		1, 2, 3  // Second triangle.
 	};
 
 	// Create buffer objects.
-	unsigned int VBO, VAO;
+	unsigned int VBO, VAO, EBO;
 	glGenBuffers(1, &VBO);		// Generate 1 buffer and store ID in VBO.
 	glGenVertexArrays(1, &VAO);	// Generate 1 VAO and store ID in VAO.
+	glGenBuffers(1, &EBO);		// Generate 1 buffer and store ID in EBO.
 
 	glBindVertexArray(VAO);		// Bind VAO.
-	
+
 	// Bind VBO to GL_ARRAY_BUFFER target and copy vertex data to buffer.
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	// Bind EBO to GL_ELEMENT_ARRAY_BUFFER target and copy indices to buffer.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 	// Specify how OpenGL should interpret VBO data.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set screen clear color.
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	// Draw in wireframe mode.
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);			// Set screen clear color.
 
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT);	// Clear screen.
 
-		// Render commands here.
+		// Render commands.
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);		// Swap window frame data buffers.
 		glfwPollEvents();				// Poll for IO events.
