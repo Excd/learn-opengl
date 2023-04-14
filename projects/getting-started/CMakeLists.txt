@@ -9,7 +9,10 @@ if (POLICY CMP0141)
 endif()
 
 # Project
-project ("getting-started")
+project ("LearnOpenGL")
+
+# Set static library output directory.
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 # Variables
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
@@ -22,7 +25,7 @@ include_directories(${OPENGL_INCLUDE_DIRS})
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Ignore GLFW tests" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Ignore GLFW examples" FORCE)
-add_subdirectory(${LIB_DIR}/glfw-3.3-stable glfw)
+add_subdirectory(${LIB_DIR}/glfw-3.3-stable ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw)
 
 # glad
 add_library(glad ${LIB_DIR}/glad/include/glad/glad.h ${LIB_DIR}/glad/src/glad.c)
@@ -30,10 +33,10 @@ target_include_directories(glad PUBLIC ${LIB_DIR}/glad/include)
 
 # Add source to this project's executable.
 set(PROJECT_SOURCE "src/main.cpp" )
-add_executable (getting-started ${PROJECT_SOURCE})
-target_link_libraries(getting-started PRIVATE ${OPENGL_LIBRARIES} glfw glad)
+add_executable (LearnOpenGL ${PROJECT_SOURCE})
+target_link_libraries(LearnOpenGL PRIVATE ${OPENGL_LIBRARIES} glfw glad)
 
 # Set C++ standard.
-set_property(TARGET getting-started PROPERTY CXX_STANDARD 20)
+set_property(TARGET LearnOpenGL PROPERTY CXX_STANDARD 20)
 
 # TODO: Add tests and install targets if needed.
