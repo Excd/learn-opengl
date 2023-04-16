@@ -1,5 +1,6 @@
-﻿# CMakeList.txt : Custom CMake for LearnOpenGL tutorial projects. 
-# LearnOpenGL	: https://learnopengl.com/
+﻿# Excd's CMake for LearnOpenGL tutorial projects.
+# Author:		https://github.com/Excd/
+# LearnOpenGL:	https://learnopengl.com/
 cmake_minimum_required (VERSION 3.12)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -15,7 +16,7 @@ project ("LearnOpenGL")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
 
 # Variables
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../lib)
+set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../lib) # Directory of library sources.
 
 # OpenGL
 find_package(OpenGL REQUIRED)
@@ -28,15 +29,35 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Ignore GLFW examples" FORCE)
 add_subdirectory(${LIB_DIR}/glfw-3.3-stable ${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw)
 
 # glad
-add_library(glad ${LIB_DIR}/glad/include/glad/glad.h ${LIB_DIR}/glad/src/glad.c)
+add_library(
+	glad
+	${LIB_DIR}/glad/include/glad/glad.h
+	${LIB_DIR}/glad/src/glad.c
+)
 target_include_directories(glad PUBLIC ${LIB_DIR}/glad/include)
 
 # Add source to this project's executable.
 set(PROJECT_SOURCE "src/main.cpp" )
-add_executable (LearnOpenGL ${PROJECT_SOURCE})
-target_link_libraries(LearnOpenGL PRIVATE ${OPENGL_LIBRARIES} glfw glad)
+add_executable (${CMAKE_PROJECT_NAME} ${PROJECT_SOURCE})
+
+# Link libraries.
+target_link_libraries(
+	${CMAKE_PROJECT_NAME}
+	PRIVATE ${OPENGL_LIBRARIES} glfw glad
+)
 
 # Set C++ standard.
-set_property(TARGET LearnOpenGL PROPERTY CXX_STANDARD 20)
+set_property(
+	TARGET ${CMAKE_PROJECT_NAME}
+	PROPERTY
+		CXX_STANDARD 20
+)
 
-# TODO: Add tests and install targets if needed.
+# Hide command prompt on Windows.
+if (WIN32)
+	set_property(
+		TARGET ${CMAKE_PROJECT_NAME}
+		PROPERTY
+			LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS"
+	)
+endif()
