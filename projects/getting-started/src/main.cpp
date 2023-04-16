@@ -1,9 +1,13 @@
-﻿#include <glad/glad.h>
+﻿/*
+* LearnOpenGL Tutorial - Getting started
+* https://learnopengl.com/Getting-started/OpenGL
+*/
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
@@ -122,6 +126,7 @@ int main(int argc, char *argv[]) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	// Bind EBO to GL_ELEMENT_ARRAY_BUFFER target and copy indices to buffer.
+	// EBO is bound within currently bound VAO.
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
@@ -129,36 +134,46 @@ int main(int argc, char *argv[]) {
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
 
+	// Unbind VBO, and VAO.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	// Draw in wireframe mode.
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);			// Set screen clear color.
 
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
-		glClear(GL_COLOR_BUFFER_BIT);	// Clear screen.
+		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-		glfwSwapBuffers(window);		// Swap window frame data buffers.
-		glfwPollEvents();				// Poll for IO events.
+		glfwSwapBuffers(window);	// Swap window frame data buffers.
+		glfwPollEvents();			// Poll for IO events.
 	}
 
-	glfwTerminate(); // Terminate GLFW and free resources.
+	// Optional: Manually free resources.
+	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteProgram(shaderProgram);
+	glfwDestroyWindow(window);
+	
+	glfwTerminate(); // Terminate GLFW and automatically free resources.
 
 	return 0;
-}
-
-// Callback function for GLFW window resize.
-// Ensures viewport matches window dimensions.
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-	glViewport(0, 0, width, height);
 }
 
 // Input handling.
 void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+}
+
+// Callback function for GLFW window resize.
+// Ensures viewport matches window dimensions.
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+	glViewport(0, 0, width, height);
 }
