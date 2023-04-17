@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
 	glDeleteShader(fragmentShader);
 
 	// Define vertex data.
-	float vertices[] = {
+	const float vertices[] = {
 		// Triangle 1.
 		-0.9f, -0.5f, 0.0f, // Left
 		-0.45f, 0.5f, 0.0f, // Top
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 	};
 
 	// Create buffer objects.
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO;
 	glGenBuffers(1, &VBO);		// Generate 1 buffer and store ID in VBO.
 	glGenVertexArrays(1, &VAO);	// Generate 1 VAO and store ID in VAO.
 
