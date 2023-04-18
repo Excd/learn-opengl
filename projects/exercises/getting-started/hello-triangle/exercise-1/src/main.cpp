@@ -13,18 +13,18 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 const unsigned int WINDOW_WIDTH = 800;
 const unsigned int WINDOW_HEIGHT = 600;
 
-// Temporary vertex shader code.
+// Vertex shader code.
 const char *vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"void main() {\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\0";
-// Temporary fragment shader code.
+	"layout (location = 0) in vec3 aPos;\n"
+	"void main() {\n"
+	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"}\0";
+// Fragment shader code.
 const char *fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main() {\n"
-"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-"}\n\0";
+	"out vec4 FragColor;\n"
+	"void main() {\n"
+	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\n\0";
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW and configure OpenGL version and profile.
@@ -32,7 +32,6 @@ int main(int argc, char *argv[]) {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
 	// Allow OpenGL forward compatibility on macOS.
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -47,6 +46,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
