@@ -156,10 +156,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Optional: Manually free resources.
-	for (int i = 0; i < objectCount; i++) {
-		glDeleteBuffers(1, &VBO[i]);
-		glDeleteVertexArrays(1, &VAO[i]);
-	}
+	glDeleteBuffers(2, VBO);
+	glDeleteVertexArrays(2, VAO);
 	glDeleteProgram(shaderProgram);
 	glfwDestroyWindow(window);
 
