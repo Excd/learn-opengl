@@ -16,4 +16,10 @@ out/
 bin/
 
 # Visual Studio
-.vs
+.vs/
+*.sln
+*.vcxproj*
+
+# Generated GLFW Subdirectories
+projects/**/lib/glfw/
+exercises/**/lib/glfw/
