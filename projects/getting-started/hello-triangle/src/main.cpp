@@ -1,6 +1,6 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting started
-* https://learnopengl.com/Getting-started/OpenGL
+* LearnOpenGL Tutorial - Getting started > Hello Triangle
+* https://learnopengl.com/Getting-started/Hello-Triangle
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

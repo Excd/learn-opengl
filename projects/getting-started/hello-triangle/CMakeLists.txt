@@ -13,7 +13,7 @@ endif()
 set(PROJECT_NAME "LearnOpenGL")
 set(EXECUTABLE_NAME ${PROJECT_NAME})
 set(PROJECT_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")	# Project source files.
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../lib")			# Source directory of libraries.
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../lib")			# Source directory of libraries.
 
 # Project statement.
 project (
