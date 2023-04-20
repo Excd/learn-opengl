@@ -25,10 +25,6 @@ project (
 # CMake variables.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib") # Output directory of static libraries.
 
-# Find OpenGL package.
-find_package(OpenGL REQUIRED)
-include_directories(${OPENGL_INCLUDE_DIRS})
-
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Ignore GLFW tests" FORCE)
@@ -47,7 +43,7 @@ target_include_directories(glad PUBLIC "${LIB_DIR}/glad/include")
 add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCE})
 target_link_libraries(
 	${EXECUTABLE_NAME}
-	PRIVATE ${OPENGL_LIBRARIES} glfw glad
+	PRIVATE glfw glad
 )
 
 # Set C++ standard.
