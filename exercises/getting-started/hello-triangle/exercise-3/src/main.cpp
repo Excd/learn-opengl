@@ -73,11 +73,8 @@ int main(int argc, char *argv[]) {
 	// Helpful constants.
 	const unsigned int objectCount = 2, vertexCount = 3;
 
-	// Shader variables.
-	unsigned int vertexShader, fragmentShaders[objectCount], shaderPrograms[objectCount];
-
 	// Create vertex shader.
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 	glCompileShader(vertexShader);
 	// Check for shader compile errors.
@@ -89,6 +86,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	// Create fragment shaders and shader programs.
+	unsigned int fragmentShaders[objectCount], shaderPrograms[objectCount];
 	for (int i = 0; i < objectCount; i++) {
 		// Create fragment shader.
 		fragmentShaders[i] = glCreateShader(GL_FRAGMENT_SHADER);
