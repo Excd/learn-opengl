@@ -1,5 +1,5 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting started > Shaders
+* LearnOpenGL Tutorial - Getting Started > Shaders
 * https://learnopengl.com/Getting-started/Shaders
 */
 #include <glad/glad.h>

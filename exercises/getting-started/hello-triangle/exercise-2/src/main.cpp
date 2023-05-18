@@ -1,5 +1,5 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting started > Hello Triangle > Exercise 2
+* LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 2
 * Now create the same 2 triangles using two different VAOs and VBOs for their data.
 * https://learnopengl.com/Getting-started/Hello-Triangle
 */

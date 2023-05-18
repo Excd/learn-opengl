@@ -1,5 +1,5 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting started > Hello Triangle
+* LearnOpenGL Tutorial - Getting Started > Hello Triangle
 * https://learnopengl.com/Getting-started/Hello-Triangle
 */
 #include <glad/glad.h>
