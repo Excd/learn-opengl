@@ -16,13 +16,17 @@ const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 
 const char *vertexShaderSource = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
+	"layout (location = 1) in vec3 aColor;\n"
+	"out vec3 ourColor;\n"
 	"void main() {\n"
-	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+	"   gl_Position = vec4(aPos, 1.0);\n"
+	"   ourColor = aColor;\n"
 	"}\0";
 const char *fragmentShaderSource = "#version 330 core\n"
 	"out vec4 FragColor;\n"
+	"in vec3 ourColor;\n"
 	"void main() {\n"
-	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"   FragColor = vec4(ourColor, 1.0);\n"
 	"}\0";
 
 int main(int argc, char *argv[]) {
@@ -65,6 +69,14 @@ int main(int argc, char *argv[]) {
 
 		return -1;
 	}
+
+	// Print number of vertex attributes supported.
+#ifndef NDEBUG
+	int numAttributes;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttributes);
+	debugString << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
+	debugOut(debugString);
+#endif
 
 	// Vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -111,11 +123,11 @@ int main(int argc, char *argv[]) {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	// Vertex data.
-	const float vertices[] = {
-		-0.5f, -0.5f, 0.0f, // Left
-		 0.5f, -0.5f, 0.0f, // Right
-		 0.0f,  0.5f, 0.0f  // Top
+	const float vertexData[] = {
+		// Positions		 // Colors
+		 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	// Right
+		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// Left
+		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f	// Top
 	};
 
 	// Generate buffers.
@@ -126,11 +138,14 @@ int main(int argc, char *argv[]) {
 	// Bind buffers and copy data.
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 
-	// Set vertex data format and enable vertex attribute.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	// Position attribute.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
 	glEnableVertexAttribArray(0);
+	// Color attribute.
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	// Unbind buffers.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -139,12 +154,13 @@ int main(int argc, char *argv[]) {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-	// Main render loop.
+	glUseProgram(shaderProgram);
+
+	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		glUseProgram(shaderProgram);
+		
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
