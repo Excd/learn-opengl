@@ -163,13 +163,14 @@ int main(int argc, char *argv[]) {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	// Draw in wireframe mode.
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);			// Set screen clear color.
 
+	glUseProgram(shaderProgram); // Use shader program.
+
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

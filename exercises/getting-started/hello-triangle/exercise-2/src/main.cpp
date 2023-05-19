@@ -159,13 +159,14 @@ int main(int argc, char *argv[]) {
 
 	glClearColor(0.1f, 0.2f, 0.6f, 1.0f); // Set screen clear color.
 
+	glUseProgram(shaderProgram);
+
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
-		glUseProgram(shaderProgram);
 		for (int i = 0; i < objectCount; i++) {
 			glBindVertexArray(VAO[i]);
 			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
