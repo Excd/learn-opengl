@@ -12,8 +12,9 @@ endif()
 # Project variables.
 set(PROJECT_NAME "LearnOpenGL")
 set(EXECUTABLE_NAME ${PROJECT_NAME})
-set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../lib")	# Source directory of libraries.
-file(GLOB_RECURSE PROJECT_SOURCE "src/*.cpp" "src/*.h") 	# Project source files.
+set(LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../external") # External library source directory.
+set(LIB_BIN "${LIB_DIR}/../bin/")                               # Library binary directory.
+file(GLOB_RECURSE PROJECT_SOURCE "src/*.cpp" "src/*.h")         # Project source files.
 
 # Project statement.
 project (
@@ -29,7 +30,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib") # Output d
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Ignore GLFW tests" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Ignore GLFW examples" FORCE)
-add_subdirectory("${LIB_DIR}/glfw-3.3-stable" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw")
+add_subdirectory("${LIB_DIR}/glfw-3.3-stable" "${LIB_BIN}/glfw")
 
 # Add glad.
 add_library(
