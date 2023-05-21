@@ -119,10 +119,10 @@ int main(int argc, char *argv[]) {
 		-0.9f, -0.5f, 0.0f, // Left
 		-0.45f, 0.5f, 0.0f, // Top
 		 0.0f, -0.5f, 0.0f, // Right
-		 // Triangle 2.
-		  0.0f, -0.5f, 0.0f, // Left
-		  0.45f, 0.5f, 0.0f, // Top
-		  0.9f, -0.5f, 0.0f  // Right
+		// Triangle 2.
+		 0.0f, -0.5f, 0.0f, // Left
+		 0.45f, 0.5f, 0.0f, // Top
+		 0.9f, -0.5f, 0.0f  // Right
 	};
 
 	// Create buffer objects.
