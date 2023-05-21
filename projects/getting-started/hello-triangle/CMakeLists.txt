@@ -12,10 +12,10 @@ endif()
 # Project variables.
 set(PROJECT_NAME "LearnOpenGL")
 set(EXECUTABLE_NAME ${PROJECT_NAME})
-set(REPO_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../..")   # Root directory of the repository.
-set(INCLUDE_DIR "${REPO_ROOT_DIR}/include")                 # Include directory.
-set(LIBRARY_SOURCE_DIR "${REPO_ROOT_DIR}/external")         # External library source directory.
-set(LIBRARY_BINARY_DIR "${REPO_ROOT_DIR}/bin")              # Library binary directory.
+set(SHARED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../shared")
+set(INCLUDE_DIR "${SHARED_DIR}/include")
+set(LIBRARY_SOURCE_DIR "${SHARED_DIR}/external")
+set(LIBRARY_BINARY_DIR "${SHARED_DIR}/bin")
 # Project source files.
 file(
     GLOB_RECURSE PROJECT_SOURCE

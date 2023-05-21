@@ -1,8 +1,8 @@
-[submodule "external/glfw-3.3-stable"]
-	path = external/glfw-3.3-stable
+[submodule "shared/external/glfw-3.3-stable"]
+	path = shared/external/glfw-3.3-stable
 	url = https://github.com/glfw/glfw.git
 	branch = 3.3-stable
-[submodule "external/glad"]
-	path = external/glad
+[submodule "shared/external/glad"]
+	path = shared/external/glad
 	url = https://github.com/Dav1dde/glad.git
 	branch = c
