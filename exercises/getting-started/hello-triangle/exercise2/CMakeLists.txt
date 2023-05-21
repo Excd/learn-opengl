@@ -31,7 +31,7 @@ project (
 )
 
 # CMake variables.
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib") # Output directory of static libraries.
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_BINARY_DIR}/lib")
 
 # Include custom debugger output library.
 add_library(debug_out INTERFACE)
