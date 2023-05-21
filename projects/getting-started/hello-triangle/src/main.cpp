@@ -1,17 +1,15 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 2
-* Now create the same 2 triangles using two different VAOs and VBOs for their data.
+* LearnOpenGL Tutorial - Getting Started > Hello Triangle
 * https://learnopengl.com/Getting-started/Hello-Triangle
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <sstream>
+#ifndef NDEBUG
+#include <debugout.h>
+#endif
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-#ifndef NDEBUG
-void debugOut(std::wostringstream &debugString);
-#endif
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 
@@ -29,13 +27,6 @@ const char *fragmentShaderSource = "#version 330 core\n"
 	"}\0";
 
 int main(int argc, char *argv[]) {
-	// Debug variables.
-#ifndef NDEBUG
-	std::wostringstream debugString;
-	int success;
-	char infoLog[512];
-#endif
-	
 	// Initialize GLFW and configure OpenGL version and profile.
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -50,27 +41,31 @@ int main(int argc, char *argv[]) {
 	GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL) {
 	#ifndef NDEBUG
-		debugString << "Failed to create GLFW window." << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "Failed to create GLFW window." << std::endl;
 	#endif
 		glfwTerminate();
 
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	
+
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Initialize glad.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 	#ifndef NDEBUG
-		debugString << "Failed to initialize GLAD." << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "Failed to initialize GLAD." << std::endl;
 	#endif
 
 		return -1;
 	}
+
+	// Debug variables.
+#ifndef NDEBUG
+	int success;
+	char infoLog[512];
+#endif
 
 	// Create vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -81,8 +76,7 @@ int main(int argc, char *argv[]) {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		debugString << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 #endif
 
@@ -95,8 +89,7 @@ int main(int argc, char *argv[]) {
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		debugString << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 #endif
 
@@ -112,8 +105,7 @@ int main(int argc, char *argv[]) {
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		debugString << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 #endif
 	// Cleanup shaders.
@@ -122,44 +114,49 @@ int main(int argc, char *argv[]) {
 
 	// Define vertex data.
 	const float vertices[] = {
-		// Triangle 1.
-		-0.9f, -0.5f, 0.0f, // Left
-		-0.45f, 0.5f, 0.0f, // Top
-		 0.0f, -0.5f, 0.0f, // Right
-		// Triangle 2.
-		 0.0f, -0.5f, 0.0f, // Left
-		 0.45f, 0.5f, 0.0f, // Top
-		 0.9f, -0.5f, 0.0f  // Right
+		 0.5f,  0.5f, 0.0f, // Top right.
+		 0.5f, -0.5f, 0.0f, // Bottom right.
+		-0.5f, -0.5f, 0.0f, // Bottom left.
+		-0.5f,  0.5f, 0.0f  // Top left.
+	};
+	// Define indices.
+	const unsigned int indices[] = {
+		0, 1, 3, // First triangle.
+		1, 2, 3  // Second triangle.
 	};
 
-	// Create buffer object arrays and helpful constants.
-	const unsigned int objectCount = 2, vertexCount = 3;
-	unsigned int VBO[objectCount], VAO[objectCount];
-	glGenBuffers(objectCount, VBO);
-	glGenVertexArrays(objectCount, VAO);
+	// Create buffer objects.
+	unsigned int VBO, VAO, EBO;
+	glGenBuffers(1, &VBO);		// Generate 1 buffer and store ID in VBO.
+	glGenVertexArrays(1, &VAO);	// Generate 1 VAO and store ID in VAO.
+	glGenBuffers(1, &EBO);		// Generate 1 buffer and store ID in EBO.
 
-	// Bind VAO and VBO for each object and copy respective vertex data.
-	for (int i = 0; i < objectCount; i++) {
-		glBindVertexArray(VAO[i]);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
-		// Calculate buffer size and array offset.
-		glBufferData(GL_ARRAY_BUFFER,
-			sizeof(vertices) / objectCount,
-			&vertices[i * 3 * vertexCount],
-			GL_STATIC_DRAW
-		);
-		// Specify how OpenGL should interpret VBO data.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexCount * sizeof(float), (void *)0);
-		glEnableVertexAttribArray(0);
-	}
+	glBindVertexArray(VAO);		// Bind VAO.
 
-	// Unbind VBO and VAO.
+	// Bind VBO to GL_ARRAY_BUFFER target and copy vertex data to buffer.
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// Bind EBO to GL_ELEMENT_ARRAY_BUFFER target and copy indices to buffer.
+	// EBO is bound within currently bound VAO.
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// Specify how OpenGL should interpret VBO data.
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glEnableVertexAttribArray(0);
+
+	// Do not unbind the EBO while a VAO is active as the bound EBO is stored within the VAO.
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	// Unbind VBO, and VAO.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	glClearColor(0.1f, 0.2f, 0.6f, 1.0f); // Set screen clear color.
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	// Draw in wireframe mode.
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);			// Set screen clear color.
 
-	glUseProgram(shaderProgram);
+	glUseProgram(shaderProgram); // Use shader program.
 
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
@@ -167,18 +164,16 @@ int main(int argc, char *argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
-		for (int i = 0; i < objectCount; i++) {
-			glBindVertexArray(VAO[i]);
-			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-		}
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);	// Swap window frame data buffers.
 		glfwPollEvents();			// Poll for IO events.
 	}
 
 	// Optional: Manually free resources.
-	glDeleteBuffers(2, VBO);
-	glDeleteVertexArrays(2, VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &VAO);
 	glDeleteProgram(shaderProgram);
 	glfwDestroyWindow(window);
 
@@ -198,12 +193,3 @@ void processInput(GLFWwindow *window) {
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
-// Debug output.
-#ifndef NDEBUG
-void debugOut(std::wostringstream &debugString) {
-	OutputDebugStringW(debugString.str().c_str());
-	debugString.str(std::wstring());
-	debugString.clear();
-}
-#endif

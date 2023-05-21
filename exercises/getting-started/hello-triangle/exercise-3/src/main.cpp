@@ -6,13 +6,12 @@
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <sstream>
+#ifndef NDEBUG
+#include <debugout.h>
+#endif
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-#ifndef NDEBUG
-void debugOut(std::wostringstream &debugString);
-#endif
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int OBJECT_COUNT = 2, VERTEX_COUNT = 3;
@@ -40,13 +39,6 @@ const char *fragmentShaderSources[] = {
 };
 
 int main(int argc, char *argv[]) {
-	// Debug variables.
-#ifndef NDEBUG
-	std::wostringstream debugString;
-	int success;
-	char infoLog[512];
-#endif
-	
 	// Initialize GLFW and configure OpenGL version and profile.
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -60,8 +52,7 @@ int main(int argc, char *argv[]) {
 	GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL) {
 	#ifndef NDEBUG
-		debugString << "Failed to create GLFW window." << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "Failed to create GLFW window." << std::endl;
 	#endif
 		glfwTerminate();
 
@@ -75,12 +66,17 @@ int main(int argc, char *argv[]) {
 	// Initialize glad.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 	#ifndef NDEBUG
-		debugString << "Failed to initialize GLAD." << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "Failed to initialize GLAD." << std::endl;
 	#endif
 
 		return -1;
 	}
+
+	// Debug variables.
+#ifndef NDEBUG
+	int success;
+	char infoLog[512];
+#endif
 
 	// Create vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -91,8 +87,7 @@ int main(int argc, char *argv[]) {
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		debugString << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-		debugOut(debugString);
+		DEBUG_OUT << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
 #endif
 
@@ -108,8 +103,7 @@ int main(int argc, char *argv[]) {
 		glGetShaderiv(fragmentShaders[i], GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(fragmentShaders[i], 512, NULL, infoLog);
-			debugString << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-			debugOut(debugString);
+			DEBUG_OUT << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 		}
 	#endif
 
@@ -123,8 +117,7 @@ int main(int argc, char *argv[]) {
 		glGetProgramiv(shaderPrograms[i], GL_LINK_STATUS, &success);
 		if (!success) {
 			glGetProgramInfoLog(shaderPrograms[i], 512, NULL, infoLog);
-			debugString << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-			debugOut(debugString);
+			DEBUG_OUT << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 		}
 	#endif
 
@@ -212,12 +205,3 @@ void processInput(GLFWwindow *window) {
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
-
-// Debug output.
-#ifndef NDEBUG
-void debugOut(std::wostringstream &debugString) {
-	OutputDebugStringW(debugString.str().c_str());
-	debugString.str(std::wstring());
-	debugString.clear();
-}
-#endif

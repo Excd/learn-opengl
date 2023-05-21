@@ -1,6 +1,6 @@
 ﻿# CMake for LearnOpenGL tutorial projects.
-# Author:		https://github.com/Excd/
-# LearnOpenGL:	https://learnopengl.com/
+# Author:		https://github.com/excd
+# LearnOpenGL:	https://learnopengl.com
 cmake_minimum_required (VERSION 3.12)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -12,9 +12,16 @@ endif()
 # Project variables.
 set(PROJECT_NAME "LearnOpenGL")
 set(EXECUTABLE_NAME ${PROJECT_NAME})
-set(LIBRARY_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../external")  # External library source directory.
-set(LIBRARY_BINARY_DIR "${LIBRARY_SOURCE_DIR}/../bin")                      # Library binary directory.
-file(GLOB_RECURSE PROJECT_SOURCE "src/*.cpp" "src/*.h")                     # Project source files.
+set(REPO_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")    # Root directory of the repository.
+set(INCLUDE_DIR "${REPO_ROOT_DIR}/include")                     # Include directory.
+set(LIBRARY_SOURCE_DIR "${REPO_ROOT_DIR}/external")             # External library source directory.
+set(LIBRARY_BINARY_DIR "${REPO_ROOT_DIR}/bin")                  # Library binary directory.
+# Project source files.
+file(
+    GLOB_RECURSE PROJECT_SOURCE
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+)
 
 # Project statement.
 project (
@@ -26,13 +33,17 @@ project (
 # CMake variables.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib") # Output directory of static libraries.
 
+# Include custom debugger output library.
+add_library(debug_out INTERFACE)
+target_include_directories(debug_out INTERFACE "${INCLUDE_DIR}/debugout")
+
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "Ignore GLFW tests" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "Ignore GLFW examples" FORCE)
 add_subdirectory("${LIBRARY_SOURCE_DIR}/glfw-3.3-stable" "${LIBRARY_BINARY_DIR}/glfw")
 
-# Add glad.
+# Include glad.
 add_library(
 	glad
 	"${LIBRARY_SOURCE_DIR}/glad/include/glad/glad.h"
@@ -44,7 +55,10 @@ target_include_directories(glad PUBLIC "${LIBRARY_SOURCE_DIR}/glad/include")
 add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCE})
 target_link_libraries(
 	${EXECUTABLE_NAME}
-	PRIVATE glfw glad
+	PRIVATE
+        glfw
+        glad
+        debug_out
 )
 
 # Set C++ standard.
@@ -59,7 +73,6 @@ set_target_properties(
 if (WIN32)
 	set_property(
 		TARGET ${EXECUTABLE_NAME}
-		PROPERTY
-			LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS"
+		PROPERTY LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS"
 	)
 endif()
