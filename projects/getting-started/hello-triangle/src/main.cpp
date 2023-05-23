@@ -94,8 +94,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 	// Create shader program.
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
+	unsigned int shaderProgram = glCreateProgram();
 	// Attach shaders to program and link.
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);

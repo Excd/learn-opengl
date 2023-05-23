@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	
+
 	// Initialize glad.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 	#ifndef NDEBUG
@@ -92,17 +92,17 @@ int main(int argc, char *argv[]) {
 #endif
 
 	// Create fragment shaders and shader programs.
-	unsigned int fragmentShaders[OBJECT_COUNT], shaderPrograms[OBJECT_COUNT];
+	unsigned int shaderPrograms[OBJECT_COUNT];
 	for (int i = 0; i < OBJECT_COUNT; i++) {
 		// Create fragment shader.
-		fragmentShaders[i] = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShaders[i], 1, &fragmentShaderSources[i], NULL);
-		glCompileShader(fragmentShaders[i]);
+		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShader, 1, &fragmentShaderSources[i], NULL);
+		glCompileShader(fragmentShader);
 		// Check for shader compile errors.
 	#ifndef NDEBUG
-		glGetShaderiv(fragmentShaders[i], GL_COMPILE_STATUS, &success);
+		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 		if (!success) {
-			glGetShaderInfoLog(fragmentShaders[i], 512, NULL, infoLog);
+			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
 			DEBUG_OUT << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 		}
 	#endif
@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 		// Create shader program and link shaders.
 		shaderPrograms[i] = glCreateProgram();
 		glAttachShader(shaderPrograms[i], vertexShader);
-		glAttachShader(shaderPrograms[i], fragmentShaders[i]);
+		glAttachShader(shaderPrograms[i], fragmentShader);
 		glLinkProgram(shaderPrograms[i]);
 		// Check for linking errors.
 	#ifndef NDEBUG
@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
 		}
 	#endif
 
-		glDeleteShader(fragmentShaders[i]);
+		glDeleteShader(fragmentShader);
 	}
 
 	glDeleteShader(vertexShader);
@@ -132,10 +132,10 @@ int main(int argc, char *argv[]) {
 		-0.9f, -0.5f, 0.0f, // Left
 		-0.45f, 0.5f, 0.0f, // Top
 		 0.0f, -0.5f, 0.0f, // Right
-		// Triangle 2.
-		 0.0f, -0.5f, 0.0f, // Left
-		 0.45f, 0.5f, 0.0f, // Top
-		 0.9f, -0.5f, 0.0f  // Right
+		 // Triangle 2.
+		  0.0f, -0.5f, 0.0f, // Left
+		  0.45f, 0.5f, 0.0f, // Top
+		  0.9f, -0.5f, 0.0f  // Right
 	};
 
 	// Create buffer object arrays.

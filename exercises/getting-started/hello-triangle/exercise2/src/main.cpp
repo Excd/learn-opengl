@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	
+
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
@@ -95,8 +95,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 	// Create shader program.
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
+	unsigned int shaderProgram = glCreateProgram();
 	// Attach shaders to program and link.
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
@@ -116,13 +115,13 @@ int main(int argc, char *argv[]) {
 	// Define vertex data.
 	const float vertices[] = {
 		// Triangle 1.
-		-0.9f, -0.5f, 0.0f, // Left
-		-0.45f, 0.5f, 0.0f, // Top
-		 0.0f, -0.5f, 0.0f, // Right
+	   -0.9f, -0.5f, 0.0f, // Left
+	   -0.45f, 0.5f, 0.0f, // Top
+		0.0f, -0.5f, 0.0f, // Right
 		// Triangle 2.
-		 0.0f, -0.5f, 0.0f, // Left
-		 0.45f, 0.5f, 0.0f, // Top
-		 0.9f, -0.5f, 0.0f  // Right
+		0.0f, -0.5f, 0.0f, // Left
+		0.45f, 0.5f, 0.0f, // Top
+		0.9f, -0.5f, 0.0f  // Right
 	};
 
 	// Create buffer object arrays and helpful constants.
