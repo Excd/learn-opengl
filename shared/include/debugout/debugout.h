@@ -1,6 +1,5 @@
 /*
 * Custom ostringstream class that outputs to the debugger console on Windows.
-* Author: https://github.com/excd
 */
 #ifndef NDEBUG
 #ifndef DEBUG_OUT_H

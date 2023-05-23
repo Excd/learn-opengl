@@ -1,6 +1,5 @@
 ﻿# CMake for LearnOpenGL tutorial projects.
-# Author:		https://github.com/excd
-# LearnOpenGL:	https://learnopengl.com
+# LearnOpenGL: https://learnopengl.com
 cmake_minimum_required (VERSION 3.12)
 
 # Enable Hot Reload for MSVC compilers if supported.
