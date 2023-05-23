@@ -19,7 +19,3 @@ bin/
 .vs/
 *.sln
 *.vcxproj*
-
-# Generated GLFW Subdirectories
-projects/**/lib/glfw/
-exercises/**/lib/glfw/
