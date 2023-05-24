@@ -14,14 +14,12 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 
-// Vertex shader code.
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderCode = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"void main() {\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
-// Fragment shader code.
-const char *fragmentShaderSource = "#version 330 core\n"
+const char *fragmentShaderCode = "#version 330 core\n"
 	"out vec4 FragColor;\n"
 	"void main() {\n"
 	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
@@ -70,7 +68,7 @@ int main(int argc, char *argv[]) {
 
 	// Create vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
 	glCompileShader(vertexShader);
 	// Check for shader compile errors.
 #ifndef NDEBUG
@@ -83,7 +81,7 @@ int main(int argc, char *argv[]) {
 
 	// Create fragment shader.
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
 	glCompileShader(fragmentShader);
 	// Check for shader compile errors.
 #ifndef NDEBUG

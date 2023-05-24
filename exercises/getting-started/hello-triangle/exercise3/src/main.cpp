@@ -16,14 +16,12 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int OBJECT_COUNT = 2, VERTEX_COUNT = 3;
 
-// Vertex shader code.
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderCode = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"void main() {\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
-// Array of each fragment shader's code.
-const char *fragmentShaderSources[] = {
+const char *fragmentShaderCode[] = {
 	// Orange fragment shader.
 	"#version 330 core\n"
 	"out vec4 FragColor;\n"
@@ -80,7 +78,7 @@ int main(int argc, char *argv[]) {
 
 	// Create vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
 	glCompileShader(vertexShader);
 	// Check for shader compile errors.
 #ifndef NDEBUG
@@ -96,7 +94,7 @@ int main(int argc, char *argv[]) {
 	for (int i = 0; i < OBJECT_COUNT; i++) {
 		// Create fragment shader.
 		unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &fragmentShaderSources[i], NULL);
+		glShaderSource(fragmentShader, 1, &fragmentShaderCode[i], NULL);
 		glCompileShader(fragmentShader);
 		// Check for shader compile errors.
 	#ifndef NDEBUG
@@ -128,14 +126,14 @@ int main(int argc, char *argv[]) {
 
 	// Define vertex data.
 	const float vertices[] = {
-		// Triangle 1.
+		 // Triangle 1.
 		-0.9f, -0.5f, 0.0f, // Left
 		-0.45f, 0.5f, 0.0f, // Top
 		 0.0f, -0.5f, 0.0f, // Right
 		 // Triangle 2.
-		  0.0f, -0.5f, 0.0f, // Left
-		  0.45f, 0.5f, 0.0f, // Top
-		  0.9f, -0.5f, 0.0f  // Right
+		 0.0f, -0.5f, 0.0f, // Left
+		 0.45f, 0.5f, 0.0f, // Top
+		 0.9f, -0.5f, 0.0f  // Right
 	};
 
 	// Create buffer object arrays.
