@@ -8,25 +8,12 @@
 #include <debugout.h>
 #endif
 
+#include "shader.h"
+
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-
-const char *vertexShaderSource = "#version 330 core\n"
-	"layout (location = 0) in vec3 aPos;\n"
-	"layout (location = 1) in vec3 aColor;\n"
-	"out vec3 ourColor;\n"
-	"void main() {\n"
-	"   gl_Position = vec4(aPos, 1.0);\n"
-	"   ourColor = aColor;\n"
-	"}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
-	"out vec4 FragColor;\n"
-	"in vec3 ourColor;\n"
-	"void main() {\n"
-	"   FragColor = vec4(ourColor, 1.0);\n"
-	"}\0";
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
@@ -60,56 +47,12 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	// Debug variables.
 #ifndef NDEBUG
-	int success, numAttributes;
-	char infoLog[512];
 	// Print number of vertex attributes supported.
+	int numAttributes;
 	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttributes);
 	DEBUG_OUT << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
 #endif
-
-	// Vertex shader.
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-#ifndef NDEBUG
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		DEBUG_OUT << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-#endif
-
-	// Fragment shader.
-	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-#ifndef NDEBUG
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		DEBUG_OUT << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-#endif
-
-	// Shader program.
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-#ifndef NDEBUG
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		DEBUG_OUT << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-#endif
-
-	// Shader cleanup.
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
 
 	const float vertexData[] = {
 		// Positions		 // Colors
@@ -142,7 +85,9 @@ int main(int argc, char *argv[]) {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-	glUseProgram(shaderProgram);
+	// Create and use shader program.
+	Shader myShader("shaders/myShader.vert", "shaders/myShader.frag");
+	myShader.useProgram();
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
@@ -159,7 +104,6 @@ int main(int argc, char *argv[]) {
 	// Cleanup.
 	glDeleteBuffers(1, &VBO);
 	glDeleteVertexArrays(1, &VAO);
-	glDeleteProgram(shaderProgram);
 	glfwDestroyWindow(window);
 	glfwTerminate();
 
