@@ -1,7 +1,7 @@
 ﻿/*
 * LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 1
-* Try to draw 2 triangles next to each other using glDrawArrays by adding more vertices to your data.
 * https://learnopengl.com/Getting-started/Hello-Triangle
+* Try to draw 2 triangles next to each other using glDrawArrays by adding more vertices to your data.
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

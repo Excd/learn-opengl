@@ -1,7 +1,7 @@
 ﻿/*
 * LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 2
-* Now create the same 2 triangles using two different VAOs and VBOs for their data.
 * https://learnopengl.com/Getting-started/Hello-Triangle
+* Now create the same 2 triangles using two different VAOs and VBOs for their data.
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

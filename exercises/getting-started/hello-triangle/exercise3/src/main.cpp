@@ -1,8 +1,8 @@
 ﻿/*
 * LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 3
+* https://learnopengl.com/Getting-started/Hello-Triangle
 * Create two shader programs where the second program uses a different fragment shader that outputs the color yellow.
 * Draw both triangles again where one outputs the color yellow.
-* https://learnopengl.com/Getting-started/Hello-Triangle
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
