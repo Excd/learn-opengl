@@ -1,26 +1,25 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting started > Hello Triangle > Exercise 1
-* Try to draw 2 triangles next to each other using glDrawArrays by adding more vertices to your data.
+* LearnOpenGL Tutorial - Getting Started > Hello Triangle > Exercise 1
 * https://learnopengl.com/Getting-started/Hello-Triangle
+* Try to draw 2 triangles next to each other using glDrawArrays by adding more vertices to your data.
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
+#ifndef NDEBUG
+#include <debugout.h>
+#endif
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-const unsigned int WINDOW_WIDTH = 800;
-const unsigned int WINDOW_HEIGHT = 600;
+const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 
-// Vertex shader code.
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderCode = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
 	"void main() {\n"
 	"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
-// Fragment shader code.
-const char *fragmentShaderSource = "#version 330 core\n"
+const char *fragmentShaderCode = "#version 330 core\n"
 	"out vec4 FragColor;\n"
 	"void main() {\n"
 	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
@@ -40,62 +39,73 @@ int main(int argc, char *argv[]) {
 	// Create GLFW window and set to current context.
 	GLFWwindow *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL) {
-		std::cout << "Failed to create GLFW window." << std::endl;
+	#ifndef NDEBUG
+		DEBUG_OUT << "Failed to create GLFW window." << std::endl;
+	#endif
 		glfwTerminate();
 
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	
+
 	// Set GLFW window resize callback.
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// Initialize glad.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD." << std::endl;
+	#ifndef NDEBUG
+		DEBUG_OUT << "Failed to initialize GLAD." << std::endl;
+	#endif
 
 		return -1;
 	}
 
-	// Shader error check variables.
+	// Debug variables.
+#ifndef NDEBUG
 	int success;
 	char infoLog[512];
+#endif
 
 	// Create vertex shader.
 	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glShaderSource(vertexShader, 1, &vertexShaderCode, NULL);
 	glCompileShader(vertexShader);
 	// Check for shader compile errors.
+#ifndef NDEBUG
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		DEBUG_OUT << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+#endif
 
 	// Create fragment shader.
 	unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glShaderSource(fragmentShader, 1, &fragmentShaderCode, NULL);
 	glCompileShader(fragmentShader);
 	// Check for shader compile errors.
+#ifndef NDEBUG
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		DEBUG_OUT << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
 	}
+#endif
 
 	// Create shader program.
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
+	unsigned int shaderProgram = glCreateProgram();
 	// Attach shaders to program and link.
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 	// Check for linking errors.
+#ifndef NDEBUG
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success) {
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		DEBUG_OUT << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
+#endif
 	// Cleanup shaders.
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -103,13 +113,13 @@ int main(int argc, char *argv[]) {
 	// Define vertex data.
 	const float vertices[] = {
 		// Triangle 1.
-		-0.9f, -0.5f, 0.0f, // Left
-		-0.45f, 0.5f, 0.0f, // Top
-		 0.0f, -0.5f, 0.0f, // Right
+	   -0.9f, -0.5f, 0.0f, // Left
+	   -0.45f, 0.5f, 0.0f, // Top
+		0.0f, -0.5f, 0.0f, // Right
 		// Triangle 2.
-		 0.0f, -0.5f, 0.0f, // Left
-		 0.45f, 0.5f, 0.0f, // Top
-		 0.9f, -0.5f, 0.0f  // Right
+		0.0f, -0.5f, 0.0f, // Left
+		0.45f, 0.5f, 0.0f, // Top
+		0.9f, -0.5f, 0.0f  // Right
 	};
 
 	// Create buffer objects.
@@ -133,13 +143,14 @@ int main(int argc, char *argv[]) {
 
 	glClearColor(0.2f, 0.1f, 0.4f, 1.0f); // Set screen clear color.
 
+	glUseProgram(shaderProgram);
+
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 
