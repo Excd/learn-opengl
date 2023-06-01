@@ -1,8 +1,8 @@
-﻿# CMake module for LearnOpenGL tutorial projects.
+﻿# Custom CMake module for LearnOpenGL tutorial projects.
 # LearnOpenGL: https://learnopengl.com
 
 # Enable Hot Reload for MSVC compilers if supported.
-if (POLICY CMP0141)
+if(POLICY CMP0141)
   cmake_policy(SET CMP0141 NEW)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
@@ -21,16 +21,16 @@ file(
 )
 
 # Project statement.
-project (
+project(
 	${PROJECT_NAME}
 	VERSION 1.0.0
 	LANGUAGES C CXX
 )
 
 # Copy shaders to build directory.
-file(GLOB SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/*") 
+file(GLOB SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/*")
 file(
-    COPY ${SHADERS} 
+    COPY ${SHADERS}
     DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/shaders"
 )
 
@@ -56,7 +56,7 @@ add_library(
 target_include_directories(glad PUBLIC "${LIBRARY_SOURCE_DIR}/glad/include")
 
 # Add source to project executable and link libraries.
-add_executable (${EXECUTABLE_NAME} ${PROJECT_SOURCE})
+add_executable(${EXECUTABLE_NAME} ${PROJECT_SOURCE})
 target_link_libraries(
 	${EXECUTABLE_NAME}
 	PRIVATE
@@ -74,7 +74,7 @@ set_target_properties(
 )
 
 # Use Windows subsystem with main entry.
-if (WIN32)
+if(WIN32)
 	set_property(
 		TARGET ${EXECUTABLE_NAME}
 		PROPERTY LINK_FLAGS "/ENTRY:mainCRTStartup /SUBSYSTEM:WINDOWS"
