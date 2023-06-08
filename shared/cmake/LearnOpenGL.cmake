@@ -27,23 +27,8 @@ project(
 	LANGUAGES C CXX
 )
 
-# Copy shaders to build directory.
-file(GLOB SHADERS "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders/*")
-file(
-    COPY ${SHADERS}
-    DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/shaders"
-)
-
 # CMake variables.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_BINARY_DIR}/lib")
-
-# Include my custom libraries.
-add_library(excd INTERFACE)
-target_include_directories(excd INTERFACE "${INCLUDE_DIR}/excd")
-
-# Include stb_image library.
-add_library(stb INTERFACE)
-target_include_directories(stb INTERFACE "${INCLUDE_DIR}/stb")
 
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
@@ -59,6 +44,14 @@ add_library(
 )
 target_include_directories(glad PUBLIC "${LIBRARY_SOURCE_DIR}/glad/include")
 
+# Include stb libraries.
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE "${INCLUDE_DIR}/stb")
+
+# Include my custom libraries.
+add_library(excd INTERFACE)
+target_include_directories(excd INTERFACE "${INCLUDE_DIR}/excd")
+
 # Add source to project executable and link libraries.
 add_executable(${EXECUTABLE_NAME} ${PROJECT_SOURCE})
 target_link_libraries(
@@ -66,8 +59,26 @@ target_link_libraries(
 	PRIVATE
         glfw
         glad
-        excd
 		stb
+		excd
+)
+
+# Copy shared resources to build directory.
+add_custom_command(
+	TARGET ${EXECUTABLE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+		-E copy_directory
+			"${SHARED_DIR}/resources"
+			"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources"
+)
+
+# Copy project shaders to build directory.
+add_custom_command(
+	TARGET ${EXECUTABLE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+		-E copy_directory
+			"${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
+			"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources/shaders"
 )
 
 # Set C++ standard.
