@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	// Create and use shader program.
-	Shader myShader("shaders/myShader.vert", "shaders/myShader.frag");
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
 	myShader.useProgram();
 
 	// Render loop.
