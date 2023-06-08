@@ -43,7 +43,7 @@ target_include_directories(excd INTERFACE "${INCLUDE_DIR}/excd")
 
 # Include stb_image library.
 add_library(stb INTERFACE)
-target_include_directories(stb INTERFACE "${INCLUDE_DIR}/excd")
+target_include_directories(stb INTERFACE "${INCLUDE_DIR}/stb")
 
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
