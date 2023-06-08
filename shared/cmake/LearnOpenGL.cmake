@@ -37,9 +37,13 @@ file(
 # CMake variables.
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_BINARY_DIR}/lib")
 
-# Include custom debugger output library.
-add_library(debug_out INTERFACE)
-target_include_directories(debug_out INTERFACE "${INCLUDE_DIR}/debugout")
+# Include my custom libraries.
+add_library(excd INTERFACE)
+target_include_directories(excd INTERFACE "${INCLUDE_DIR}/excd")
+
+# Include stb_image library.
+add_library(stb INTERFACE)
+target_include_directories(stb INTERFACE "${INCLUDE_DIR}/excd")
 
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
@@ -62,7 +66,8 @@ target_link_libraries(
 	PRIVATE
         glfw
         glad
-        debug_out
+        excd
+		stb
 )
 
 # Set C++ standard.
