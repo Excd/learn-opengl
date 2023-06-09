@@ -8,27 +8,22 @@ if(POLICY CMP0141)
 endif()
 
 # Project variables.
-set(PROJECT_NAME "LearnOpenGL")
 set(EXECUTABLE_NAME ${PROJECT_NAME})
-set(INCLUDE_DIR "${SHARED_DIR}/include")
 set(LIBRARY_SOURCE_DIR "${SHARED_DIR}/external")
 set(LIBRARY_BINARY_DIR "${SHARED_DIR}/bin")
+set(INCLUDE_DIR "${SHARED_DIR}/include")
+set(RESOURCE_DIR "${SHARED_DIR}/resources")
+set(SHADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src/shaders")
+
+# CMake variables.
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_BINARY_DIR}/lib")
+
 # Project source files.
 file(
     GLOB_RECURSE PROJECT_SOURCE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
 )
-
-# Project statement.
-project(
-	${PROJECT_NAME}
-	VERSION 1.0.0
-	LANGUAGES C CXX
-)
-
-# CMake variables.
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${LIBRARY_BINARY_DIR}/lib")
 
 # Configure and add GLFW.
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "Ignore GLFW docs" FORCE)
@@ -64,22 +59,26 @@ target_link_libraries(
 )
 
 # Copy shared resources to build directory.
-add_custom_command(
-	TARGET ${EXECUTABLE_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-		-E copy_directory
-			"${SHARED_DIR}/resources"
-			"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources"
-)
+if(EXISTS ${RESOURCE_DIR})
+	add_custom_command(
+		TARGET ${EXECUTABLE_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+			-E copy_directory_if_different
+				${RESOURCE_DIR}
+				"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources"
+	)
+endif()
 
 # Copy project shaders to build directory.
-add_custom_command(
-	TARGET ${EXECUTABLE_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND}
-		-E copy_directory
-			"${CMAKE_CURRENT_SOURCE_DIR}/src/shaders"
-			"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources/shaders"
-)
+if(EXISTS ${SHADER_DIR})
+	add_custom_command(
+		TARGET ${EXECUTABLE_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND}
+			-E copy_directory_if_different
+				${SHADER_DIR}
+				"$<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/resources/shaders"
+	)
+endif()
 
 # Set C++ standard.
 set_target_properties(
