@@ -1,9 +1,4 @@
 {
-  "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 23,
-    "patch": 0
-  },
   "configurePresets": [
     {
       "name": "windows-base",
