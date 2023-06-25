@@ -80,11 +80,13 @@ if(EXISTS ${SHADER_DIR})
 	)
 endif()
 
-# Set C++ standard.
+# Set C and C++ standard.
 set_target_properties(
 	${EXECUTABLE_NAME}
 	PROPERTIES
+		C_STANDARD 11
 		CXX_STANDARD 20
+		CMAKE_C_STANDARD_REQUIRED True
 		CMAKE_CXX_STANDARD_REQUIRED True
 )
 
