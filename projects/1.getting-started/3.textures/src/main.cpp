@@ -17,6 +17,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int TEXTURE_COUNT = 2;
+
 const char *TEXTURE_PATHS[TEXTURE_COUNT] = {
 	"resources/textures/container.jpg",
 	"resources/textures/awesomeface.png"
@@ -54,19 +55,12 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-#ifndef NDEBUG
-	// Print number of vertex attributes supported.
-	int numAttributes;
-	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &numAttributes);
-	DEBUG_OUT << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
-#endif
-
 	const float vertexData[] = {
 		// Positions		 // Texture coordinates
-		 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f,	// Top right
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f,	// Bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,	// Bottom left
-		-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f		// Top left
+		 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f, // Top right
+		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // Bottom right
+		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
+		-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f	 // Top left
 	};
 	const unsigned int indices[] = {
 		0, 1, 3, // First triangle
@@ -92,6 +86,10 @@ int main(int argc, char *argv[]) {
 	// Texture coordinate attribute.
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+
+	// Unbind buffers.
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 
 	// Create and use shader program.
 	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
@@ -138,10 +136,6 @@ int main(int argc, char *argv[]) {
 		}
 		stbi_image_free(data);
 	}
-
-	// Unbind buffers.
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
 
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
