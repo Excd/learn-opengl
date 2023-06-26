@@ -9,7 +9,7 @@
 #include <debugout.h>
 #endif
 
-#include "shader.h"
+#include "shader/shader.h"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
