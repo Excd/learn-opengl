@@ -5,5 +5,5 @@
     "minor": 23,
     "patch": 0
   },
-  "include": [ "../../../shared/cmake/SharedPresets.json" ]
+  "include": [ "../../../../shared/cmake/SharedPresets.json" ]
 }
