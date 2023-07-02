@@ -6,3 +6,7 @@
 	path = shared/external/glad
 	url = https://github.com/Dav1dde/glad.git
 	branch = c
+[submodule "shared/external/glm-stable"]
+	path = shared/external/glm-stable
+	url = https://github.com/g-truc/glm
+	branch = stable
