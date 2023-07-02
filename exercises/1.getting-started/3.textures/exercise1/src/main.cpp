@@ -101,6 +101,8 @@ int main(int argc, char *argv[]) {
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
 	for (int i = 0; i < TEXTURE_COUNT; i++) {
+		// Activate texture unit and bind texture.
+		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
 		// Set texture wrapping and filtering options.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -146,10 +148,6 @@ int main(int argc, char *argv[]) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (int i = 0; i < TEXTURE_COUNT; i++) {
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, textures[i]);
-		}
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
