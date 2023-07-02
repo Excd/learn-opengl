@@ -14,9 +14,9 @@ include_directories("${SHARED_DIR}/src")
 file(
     GLOB_RECURSE PROJECT_SOURCE
         "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
         "${SHARED_DIR}/src/*.cpp"
-        "${SHARED_DIR}/src/*.h"
+        "${SHARED_DIR}/src/*.hpp"
 )
 
 # Configure CMake.

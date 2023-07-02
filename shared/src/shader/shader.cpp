@@ -2,10 +2,10 @@
 #include <sstream>
 #include <glad\glad.h>
 #ifndef NDEBUG
-#include <debugout.h>
+#include <debugout.hpp>
 #endif
 
-#include "shader.h"
+#include "shader.hpp"
 
 Shader::Shader() {
 	program = glCreateProgram();

@@ -6,7 +6,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #ifndef NDEBUG
-#include <debugout.h>
+#include <debugout.hpp>
 #endif
 
 void processInput(GLFWwindow *window);

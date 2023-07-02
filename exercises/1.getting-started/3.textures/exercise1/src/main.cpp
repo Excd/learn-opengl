@@ -9,10 +9,10 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 #ifndef NDEBUG
-#include <debugout.h>
+#include <debugout.hpp>
 #endif
 
-#include "shader/shader.h"
+#include "shader/shader.hpp"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
