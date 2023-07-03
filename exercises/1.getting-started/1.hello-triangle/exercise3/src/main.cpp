@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
 			GL_STATIC_DRAW
 		);
 		// Specify how OpenGL should interpret VBO data.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COUNT * sizeof(float), (void *)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COUNT * sizeof(float), reinterpret_cast<void *>(0));
 		glEnableVertexAttribArray(0);
 	}
 

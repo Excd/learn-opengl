@@ -13,6 +13,7 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
+const unsigned int OBJECT_COUNT = 2, VERTEX_COUNT = 3;
 
 const char *vertexShaderCode = "#version 330 core\n"
 	"layout (location = 0) in vec3 aPos;\n"
@@ -122,24 +123,23 @@ int main(int argc, char *argv[]) {
 		0.9f, -0.5f, 0.0f  // Right
 	};
 
-	// Create buffer object arrays and helpful constants.
-	const unsigned int objectCount = 2, vertexCount = 3;
-	unsigned int VBO[objectCount], VAO[objectCount];
-	glGenBuffers(objectCount, VBO);
-	glGenVertexArrays(objectCount, VAO);
+	// Create buffer object arrays.
+	unsigned int VBO[OBJECT_COUNT], VAO[OBJECT_COUNT];
+	glGenBuffers(OBJECT_COUNT, VBO);
+	glGenVertexArrays(OBJECT_COUNT, VAO);
 
 	// Bind VAO and VBO for each object and copy respective vertex data.
-	for (int i = 0; i < objectCount; i++) {
+	for (int i = 0; i < OBJECT_COUNT; i++) {
 		glBindVertexArray(VAO[i]);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO[i]);
 		// Calculate buffer size and array offset.
 		glBufferData(GL_ARRAY_BUFFER,
-			sizeof(vertices) / objectCount,
-			&vertices[i * 3 * vertexCount],
+			sizeof(vertices) / OBJECT_COUNT,
+			&vertices[i * 3 * VERTEX_COUNT],
 			GL_STATIC_DRAW
 		);
 		// Specify how OpenGL should interpret VBO data.
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexCount * sizeof(float), (void *)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, VERTEX_COUNT * sizeof(float), reinterpret_cast<void *>(0));
 		glEnableVertexAttribArray(0);
 	}
 
@@ -157,9 +157,9 @@ int main(int argc, char *argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT); // Clear screen.
 
 		// Render commands.
-		for (int i = 0; i < objectCount; i++) {
+		for (int i = 0; i < OBJECT_COUNT; i++) {
 			glBindVertexArray(VAO[i]);
-			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+			glDrawArrays(GL_TRIANGLES, 0, VERTEX_COUNT);
 		}
 
 		glfwSwapBuffers(window);	// Swap window frame data buffers.
