@@ -3,8 +3,9 @@
 * https://learnopengl.com/Getting-started/Transformations
 * Using the last transformation on the container, try switching the order around by first
 * rotating and then translating. See what happens and try to reason why this happens.
-* Answer: Due to matrix multiplication order, the container is first translated and then rotated
-* about the orignal origin.
+* Answer: Due to matrix multiplication order (right-to-left), the container is first translated and
+* then rotated about the orignal origin. Alternatively, it can be viewed as applying the translation
+* based on the rotated coordinates (rotations are a "change of basis" transformation).
 */
 #include <cstdio>
 #include <glad/glad.h>
