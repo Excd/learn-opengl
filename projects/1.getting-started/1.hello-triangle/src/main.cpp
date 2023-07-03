@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #ifndef NDEBUG
-#include <debugout.h>
+#include <debugout.hpp>
 #endif
 
 void processInput(GLFWwindow *window);
@@ -140,7 +140,7 @@ int main(int argc, char *argv[]) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Specify how OpenGL should interpret VBO data.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), reinterpret_cast<void *>(0));
 	glEnableVertexAttribArray(0);
 
 	// Do not unbind the EBO while a VAO is active as the bound EBO is stored within the VAO.

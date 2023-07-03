@@ -10,10 +10,10 @@
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 #ifndef NDEBUG
-#include <debugout.h>
+#include <debugout.hpp>
 #endif
 
-#include "shader/shader.h"
+#include "shader/shader.hpp"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -84,10 +84,10 @@ int main(int argc, char *argv[]) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// Position attribute.
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(0));
 	glEnableVertexAttribArray(0);
 	// Texture coordinate attribute.
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	// Unbind buffers.
@@ -103,7 +103,8 @@ int main(int argc, char *argv[]) {
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
 
-	// Bind first texture (container.jpg).
+	// Activate first unit and bind texture (container.jpg).
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	// Set texture wrapping and filtering options.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -125,7 +126,8 @@ int main(int argc, char *argv[]) {
 	stbi_image_free(data);
 	myShader.setInt("textures[0]", 0);
 
-	// Bind second texture (awesomeface.png).
+	// Activate second unit and bind texture (awesomeface.png).
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textures[1]);
 	// Set texture wrapping and filtering options.
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -153,10 +155,6 @@ int main(int argc, char *argv[]) {
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (int i = 0; i < TEXTURE_COUNT; i++) {
-			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, textures[i]);
-		}
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

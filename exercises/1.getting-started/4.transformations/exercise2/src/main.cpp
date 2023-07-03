@@ -1,11 +1,19 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting Started > Textures
-* https://learnopengl.com/Getting-started/Textures
+* LearnOpenGL Tutorial - Getting Started > Transformations > Exercise 2
+* https://learnopengl.com/Getting-started/Transformations
+* Try drawing a second container with another call to glDrawElements but place it at a
+* different position using transformations only. Make sure this second container is placed
+* at the top-left of the window and instead of rotating, scale it over time (using the sin
+* function is useful here; note that using sin will cause the object to invert as soon as a
+* negative scale is applied).
 */
 #include <cstdio>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #ifndef NDEBUG
 #include <debugout.hpp>
 #endif
@@ -72,21 +80,17 @@ int main(int argc, char *argv[]) {
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
-
 	// Bind buffers and copy data.
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Position attribute.
+	// Set vertex attributes.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(0));
 	glEnableVertexAttribArray(0);
-	// Texture coordinate attribute.
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 	// Unbind buffers.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -99,17 +103,14 @@ int main(int argc, char *argv[]) {
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
 	for (int i = 0; i < TEXTURE_COUNT; i++) {
-		// Activate texture unit and bind texture.
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
-		// Set texture wrapping and filtering options.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		// Load image, create texture, and generate mipmaps.
 		int width, height, numChannels;
-		stbi_set_flip_vertically_on_load(true); // Flip texture vertically.
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char *data = stbi_load(TEXTURE_PATHS[i], &width, &height, &numChannels, 0);
 		if (data) {
 			switch (numChannels) {
@@ -126,7 +127,6 @@ int main(int argc, char *argv[]) {
 					break;
 			}
 			glGenerateMipmap(GL_TEXTURE_2D);
-			// Assign texture unit to sampler uniform.
 			char uniformName[16];
 			std::snprintf(uniformName, sizeof(uniformName), "textures[%d]", i);
 			myShader.setInt(uniformName, i);
@@ -139,7 +139,7 @@ int main(int argc, char *argv[]) {
 		stbi_image_free(data);
 	}
 
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.2f, 0.8f, 0.2f, 1.0f);
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
@@ -147,6 +147,21 @@ int main(int argc, char *argv[]) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glBindVertexArray(VAO);
+		glm::mat4 transform;
+
+		// Draw first box with translate*rotate transformations.
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+		transform = glm::rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
+		myShader.setMat4("transform", transform);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		// Draw second box with translate*scale transformations.
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float scaleAmount = sin(static_cast<float>(glfwGetTime()));
+		transform = glm::scale(transform, glm::vec3(scaleAmount, scaleAmount, 1.0f));
+		myShader.setMat4("transform", transform);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
