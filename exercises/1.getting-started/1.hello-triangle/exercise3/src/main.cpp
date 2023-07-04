@@ -36,6 +36,18 @@ const char *fragmentShaderCode[] = {
 	"}\0"
 };
 
+// Define vertex data.
+const float vertices[] = {
+	// Triangle 1.
+   -0.9f, -0.5f, 0.0f, // Left
+   -0.45f, 0.5f, 0.0f, // Top
+	0.0f, -0.5f, 0.0f, // Right
+	// Triangle 2.
+	0.0f, -0.5f, 0.0f, // Left
+	0.45f, 0.5f, 0.0f, // Top
+	0.9f, -0.5f, 0.0f  // Right
+};
+
 int main(int argc, char *argv[]) {
 	// Initialize GLFW and configure OpenGL version and profile.
 	glfwInit();
@@ -123,18 +135,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	glDeleteShader(vertexShader);
-
-	// Define vertex data.
-	const float vertices[] = {
-		 // Triangle 1.
-		-0.9f, -0.5f, 0.0f, // Left
-		-0.45f, 0.5f, 0.0f, // Top
-		 0.0f, -0.5f, 0.0f, // Right
-		 // Triangle 2.
-		 0.0f, -0.5f, 0.0f, // Left
-		 0.45f, 0.5f, 0.0f, // Top
-		 0.9f, -0.5f, 0.0f  // Right
-	};
 
 	// Create buffer object arrays.
 	unsigned int VBO[OBJECT_COUNT], VAO[OBJECT_COUNT];

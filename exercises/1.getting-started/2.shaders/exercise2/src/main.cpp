@@ -1,7 +1,7 @@
 ﻿/*
 * LearnOpenGL Tutorial - Getting Started > Shaders > Exercise 2
 * https://learnopengl.com/Getting-started/Shaders
-* Specify a horizontal offset via a uniform and move the triangle to the right side 
+* Specify a horizontal offset via a uniform and move the triangle to the right side
 * of the screen in the vertex shader using this offset value.
 */
 #include <glad/glad.h>
@@ -16,6 +16,13 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
+
+const float vertexData[] = {
+	 // Positions		 // Colors
+	 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	// Right
+	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// Left
+	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f	// Top
+};
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
@@ -56,12 +63,10 @@ int main(int argc, char *argv[]) {
 	DEBUG_OUT << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
 #endif
 
-	const float vertexData[] = {
-		// Positions		 // Colors
-		 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	// Right
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// Left
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f	// Top
-	};
+	// Create and use shader program.
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
+	myShader.useProgram();
+	myShader.setFloat("xOffset", 0.5f);
 
 	// Generate buffers.
 	unsigned int VBO, VAO;
@@ -86,11 +91,6 @@ int main(int argc, char *argv[]) {
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-	// Create and use shader program.
-	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
-	myShader.useProgram();
-	myShader.setFloat("xOffset", 0.5f);
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
