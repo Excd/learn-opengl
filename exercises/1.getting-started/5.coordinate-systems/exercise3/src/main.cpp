@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
 
 	// Configure OpenGL.
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.6f, 0.2f, 0.6f, 1.0f);
 
 	// Create and use shader program.
 	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
