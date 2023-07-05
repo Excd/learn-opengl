@@ -1,15 +1,14 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting Started > Textures > Exercise 3
-* https://learnopengl.com/Getting-started/Textures
-* Try to display only the center pixels of the texture image on the rectangle
-* in such a way that the individual pixels are getting visible by changing the
-* texture coordinates. Try to set the texture filtering method to GL_NEAREST to
-* see the pixels more clearly.
+* LearnOpenGL Tutorial - Getting Started > Coordinate Systems
+* https://learnopengl.com/Getting-started/Coordinate-Systems
 */
 #include <cstdio>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #ifndef NDEBUG
 #include <debugout.hpp>
 #endif
@@ -20,23 +19,71 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-const unsigned int TEXTURE_COUNT = 2;
+const unsigned int TEXTURE_COUNT = 2, CUBE_COUNT = 10;
 
 const char *texturePaths[TEXTURE_COUNT] = {
 	"resources/textures/container.jpg",
 	"resources/textures/awesomeface.png"
 };
 
+// Cube vertex data. 6 faces * 2 triangles * 3 vertices = 36 vertices
 const float vertexData[] = {
-	 // Positions		 // Texture coordinates
-	 0.5f,  0.5f, 0.0f,	 0.55f, 0.55f, // Top right
-	 0.5f, -0.5f, 0.0f,  0.55f, 0.45f, // Bottom right
-	-0.5f, -0.5f, 0.0f,  0.45f, 0.45f, // Bottom left
-	-0.5f,  0.5f, 0.0f,	 0.45f, 0.55f  // Top left
+	 // Positions         // Texture Coords
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-const unsigned int indices[] = {
-	0, 1, 3, // First triangle
-	1, 2, 3	 // Second triangle
+
+// Cube positions in world space.
+const glm::vec3 cubePositions[CUBE_COUNT] = {
+	glm::vec3( 0.0f,  0.0f,  0.0f),
+	glm::vec3( 2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3( 2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3( 1.3f, -2.0f, -2.5f),
+	glm::vec3( 1.5f,  2.0f, -2.5f),
+	glm::vec3( 1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
 int main(int argc, char *argv[]) {
@@ -71,49 +118,41 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	// Configure OpenGL.
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
 	// Create and use shader program.
 	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
 	myShader.useProgram();
 
-	// Generate buffers.
-	unsigned int VAO, VBO, EBO;
+	// Generate buffers and set vertex attributes.
+	unsigned int VAO, VBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	// Bind buffers and copy data.
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// Position attribute.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(0));
 	glEnableVertexAttribArray(0);
-	// Texture coordinate attribute.
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-
 	// Unbind buffers.
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Create texture objects.
+	// Create textures.
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
 	for (int i = 0; i < TEXTURE_COUNT; i++) {
-		// Activate texture unit and bind texture.
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, textures[i]);
-		// Set texture wrapping and filtering options.
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		// Load image, create texture, and generate mipmaps.
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		int width, height, numChannels;
-		stbi_set_flip_vertically_on_load(true); // Flip texture vertically.
+		stbi_set_flip_vertically_on_load(true);
 		unsigned char *data = stbi_load(texturePaths[i], &width, &height, &numChannels, 0);
 		if (data) {
 			switch (numChannels) {
@@ -130,7 +169,6 @@ int main(int argc, char *argv[]) {
 					break;
 			}
 			glGenerateMipmap(GL_TEXTURE_2D);
-			// Assign texture unit to sampler uniform.
 			char uniformName[16];
 			std::snprintf(uniformName, sizeof(uniformName), "textures[%d]", i);
 			myShader.setInt(uniformName, i);
@@ -143,15 +181,36 @@ int main(int argc, char *argv[]) {
 		stbi_image_free(data);
 	}
 
-	glClearColor(0.0f, 0.6f, 0.6f, 1.0f);
+	// Initialize coordinate system matrices.
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+	// Translate and set view matrix.
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+	myShader.setMat4("view", view);
+	// Set projection (perspective) matrix.
+	projection = glm::perspective(
+		glm::radians(45.0f),
+		static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT),
+		0.1f, 100.0f
+	);
+	myShader.setMat4("projection", projection);
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Render cubes.
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < CUBE_COUNT; i++) {
+			// Translate and rotate each cube's model matrix.
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+			myShader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -6,7 +6,7 @@
 * values are interpolated across the triangle).
 * Once you managed to do this; try to answer the following question:
 * Why is the bottom-left side of our triangle black?
-* Answer: Floating-point color values are clamped in the range [0, 1].
+* Answer: Floating-point color values are clamped in the range [0.0, 1.0].
 */
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -20,6 +20,12 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
+
+const float vertexData[] = {
+	 0.5f, -0.5f, 0.0f,	// Right
+	-0.5f, -0.5f, 0.0f,	// Left
+	 0.0f,  0.5f, 0.0f	// Top
+};
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
@@ -60,11 +66,9 @@ int main(int argc, char *argv[]) {
 	DEBUG_OUT << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
 #endif
 
-	const float vertexData[] = {
-		 0.5f, -0.5f, 0.0f,	// Right
-		-0.5f, -0.5f, 0.0f,	// Left
-		 0.0f,  0.5f, 0.0f	// Top
-	};
+	// Create and use shader program.
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
+	myShader.useProgram();
 
 	// Generate buffers.
 	unsigned int VBO, VAO;
@@ -86,10 +90,6 @@ int main(int argc, char *argv[]) {
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-	// Create and use shader program.
-	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
-	myShader.useProgram();
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {

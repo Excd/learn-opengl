@@ -1,11 +1,8 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting Started > Transformations > Exercise 1
-* https://learnopengl.com/Getting-started/Transformations
-* Using the last transformation on the container, try switching the order around by first
-* rotating and then translating. See what happens and try to reason why this happens.
-* Answer: Due to matrix multiplication order (right-to-left), the container is first translated and
-* then rotated about the orignal origin. Alternatively, it can be viewed as applying the translation
-* based on the rotated coordinates (rotations are a "change of basis" transformation).
+* LearnOpenGL Tutorial - Getting Started > Coordinate Systems > Exercise 2
+* https://learnopengl.com/Getting-started/Coordinate-Systems
+* Play with the view matrix by translating in several directions and see how the scene changes.
+* Think of the view matrix as a camera object.
 */
 #include <cstdio>
 #include <glad/glad.h>
@@ -24,24 +21,75 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
-const unsigned int TEXTURE_COUNT = 2;
+const unsigned int TEXTURE_COUNT = 2, CUBE_COUNT = 10;
 
 const char *texturePaths[TEXTURE_COUNT] = {
 	"resources/textures/container.jpg",
 	"resources/textures/awesomeface.png"
 };
 
+// Cube vertex data. 6 faces * 2 triangles * 3 vertices = 36 vertices
 const float vertexData[] = {
-	 // Positions		 // Texture coordinates
-	 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f,
-	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
-	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
-	-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f
+	 // Positions         // Texture Coords
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
-const unsigned int indices[] = {
-	0, 1, 3,
-	1, 2, 3
+
+// Cube positions in world space.
+const glm::vec3 cubePositions[CUBE_COUNT] = {
+	glm::vec3( 0.0f,  0.0f,  0.0f),
+	glm::vec3( 2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3( 2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3( 1.3f, -2.0f, -2.5f),
+	glm::vec3( 1.5f,  2.0f, -2.5f),
+	glm::vec3( 1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
+
+// Initialize camera position in world space.
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
@@ -75,22 +123,21 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	// Configure OpenGL.
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
 	// Create and use shader program.
 	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
 	myShader.useProgram();
 
-	// Generate buffers.
-	unsigned int VAO, VBO, EBO;
+	// Generate buffers and set vertex attributes.
+	unsigned int VAO, VBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	// Bind buffers and copy data.
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexData), vertexData, GL_STATIC_DRAW);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	// Set vertex attributes.
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(0));
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
@@ -99,7 +146,7 @@ int main(int argc, char *argv[]) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Create texture objects.
+	// Create textures.
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
 	for (int i = 0; i < TEXTURE_COUNT; i++) {
@@ -139,21 +186,38 @@ int main(int argc, char *argv[]) {
 		stbi_image_free(data);
 	}
 
-	glClearColor(0.1f, 0.0f, 0.1f, 1.0f);
+	// Initialize coordinate system matrices.
+	glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 projection = glm::mat4(1.0f);
+	// Set projection (perspective) matrix.
+	projection = glm::perspective(
+		glm::radians(45.0f),
+		static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT),
+		0.1f, 100.0f
+	);
+	myShader.setMat4("projection", projection);
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
 		processInput(window);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Translate and set view matrix.
+		view = glm::mat4(1.0f);
+		view = glm::translate(view, cameraPos);
+		myShader.setMat4("view", view);
+
+		// Render cubes.
 		glBindVertexArray(VAO);
-
-		// Draw box with transformations.
-		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::rotate(transform, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
-		transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
-		myShader.setMat4("transform", transform);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < CUBE_COUNT; i++) {
+			// Translate and rotate each cube's model matrix.
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
+			myShader.setMat4("model", model);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -171,8 +235,24 @@ int main(int argc, char *argv[]) {
 
 // Input handling.
 void processInput(GLFWwindow *window) {
+	const float cameraSpeed = 0.02f;
+
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	// Camera movement with arrow keys and page up/down.
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		cameraPos.z += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		cameraPos.z -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		cameraPos.x += cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		cameraPos.x -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+		cameraPos.y -= cameraSpeed;
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+		cameraPos.y += cameraSpeed;
 }
 
 // Callback function for GLFW window resize.

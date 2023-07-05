@@ -26,9 +26,21 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int TEXTURE_COUNT = 2;
 
-const char *TEXTURE_PATHS[TEXTURE_COUNT] = {
+const char *texturePaths[TEXTURE_COUNT] = {
 	"resources/textures/container.jpg",
 	"resources/textures/awesomeface.png"
+};
+
+const float vertexData[] = {
+	 // Positions		 // Texture coordinates
+	 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f,
+	 0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+	-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f
+};
+const unsigned int indices[] = {
+	0, 1, 3,
+	1, 2, 3
 };
 
 int main(int argc, char *argv[]) {
@@ -63,17 +75,9 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	const float vertexData[] = {
-		// Positions		 // Texture coordinates
-		 0.5f,  0.5f, 0.0f,	 1.0f, 1.0f, // Top right
-		 0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // Bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
-		-0.5f,  0.5f, 0.0f,	 0.0f, 1.0f	 // Top left
-	};
-	const unsigned int indices[] = {
-		0, 1, 3, // First triangle
-		1, 2, 3	 // Second triangle
-	};
+	// Create and use shader program.
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
+	myShader.useProgram();
 
 	// Generate buffers.
 	unsigned int VAO, VBO, EBO;
@@ -95,10 +99,6 @@ int main(int argc, char *argv[]) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Create and use shader program.
-	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
-	myShader.useProgram();
-
 	// Create texture objects.
 	unsigned int textures[TEXTURE_COUNT];
 	glGenTextures(TEXTURE_COUNT, textures);
@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		int width, height, numChannels;
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char *data = stbi_load(TEXTURE_PATHS[i], &width, &height, &numChannels, 0);
+		unsigned char *data = stbi_load(texturePaths[i], &width, &height, &numChannels, 0);
 		if (data) {
 			switch (numChannels) {
 				case 3:

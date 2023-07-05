@@ -24,6 +24,19 @@ const char *fragmentShaderCode = "#version 330 core\n"
 	"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\0";
 
+// Define vertex data.
+const float vertices[] = {
+	 0.5f,  0.5f, 0.0f, // Top right.
+	 0.5f, -0.5f, 0.0f, // Bottom right.
+	-0.5f, -0.5f, 0.0f, // Bottom left.
+	-0.5f,  0.5f, 0.0f  // Top left.
+};
+// Define indices.
+const unsigned int indices[] = {
+	0, 1, 3, // First triangle.
+	1, 2, 3  // Second triangle.
+};
+
 int main(int argc, char *argv[]) {
 	// Initialize GLFW and configure OpenGL version and profile.
 	glfwInit();
@@ -109,18 +122,7 @@ int main(int argc, char *argv[]) {
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
 
-	// Define vertex data.
-	const float vertices[] = {
-		 0.5f,  0.5f, 0.0f, // Top right.
-		 0.5f, -0.5f, 0.0f, // Bottom right.
-		-0.5f, -0.5f, 0.0f, // Bottom left.
-		-0.5f,  0.5f, 0.0f  // Top left.
-	};
-	// Define indices.
-	const unsigned int indices[] = {
-		0, 1, 3, // First triangle.
-		1, 2, 3  // Second triangle.
-	};
+	glUseProgram(shaderProgram); // Use shader program.
 
 	// Create buffer objects.
 	unsigned int VBO, VAO, EBO;
@@ -152,8 +154,6 @@ int main(int argc, char *argv[]) {
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);	// Draw in wireframe mode.
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);			// Set screen clear color.
-
-	glUseProgram(shaderProgram); // Use shader program.
 
 	// Main render loop.
 	while (!glfwWindowShouldClose(window)) {

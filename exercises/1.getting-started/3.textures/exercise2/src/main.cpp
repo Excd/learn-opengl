@@ -21,9 +21,21 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int TEXTURE_COUNT = 2;
 
-const char *TEXTURE_PATHS[TEXTURE_COUNT] = {
+const char *texturePaths[TEXTURE_COUNT] = {
 	"resources/textures/container.jpg",
 	"resources/textures/awesomeface.png"
+};
+
+const float vertexData[] = {
+	 // Positions		 // Texture coordinates
+	 0.5f,  0.5f, 0.0f,	 2.0f, 2.0f, // Top right
+	 0.5f, -0.5f, 0.0f,  2.0f, 0.0f, // Bottom right
+	-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
+	-0.5f,  0.5f, 0.0f,	 0.0f, 2.0f	 // Top left
+};
+const unsigned int indices[] = {
+	0, 1, 3, // First triangle
+	1, 2, 3	 // Second triangle
 };
 
 int main(int argc, char *argv[]) {
@@ -58,17 +70,9 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
-	const float vertexData[] = {
-		// Positions		 // Texture coordinates
-		 0.5f,  0.5f, 0.0f,	 2.0f, 2.0f, // Top right
-		 0.5f, -0.5f, 0.0f,  2.0f, 0.0f, // Bottom right
-		-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // Bottom left
-		-0.5f,  0.5f, 0.0f,	 0.0f, 2.0f	 // Top left
-	};
-	const unsigned int indices[] = {
-		0, 1, 3, // First triangle
-		1, 2, 3	 // Second triangle
-	};
+	// Create and use shader program.
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
+	myShader.useProgram();
 
 	// Generate buffers.
 	unsigned int VAO, VBO, EBO;
@@ -94,10 +98,6 @@ int main(int argc, char *argv[]) {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// Create and use shader program.
-	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
-	myShader.useProgram();
-
 	// Create texture objects.
 	int width, height, numChannels; // Texture data variables.
 	unsigned int textures[TEXTURE_COUNT];
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load image, create texture, and generate mipmaps.
 	stbi_set_flip_vertically_on_load(true); // Flip texture vertically.
-	unsigned char *data = stbi_load(TEXTURE_PATHS[0], &width, &height, &numChannels, 0);
+	unsigned char *data = stbi_load(texturePaths[0], &width, &height, &numChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// Load image, create texture, and generate mipmaps.
-	data = stbi_load(TEXTURE_PATHS[1], &width, &height, &numChannels, 0);
+	data = stbi_load(texturePaths[1], &width, &height, &numChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);

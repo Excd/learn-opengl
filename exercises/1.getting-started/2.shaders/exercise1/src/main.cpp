@@ -16,6 +16,13 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 
+const float vertexData[] = {
+	 // Positions		 // Colors
+	 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	// Right
+	-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// Left
+	 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f	// Top
+};
+
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
 	glfwInit();
@@ -55,12 +62,9 @@ int main(int argc, char *argv[]) {
 	DEBUG_OUT << "Maximum number of vertex attributes supported: " << numAttributes << std::endl;
 #endif
 
-	const float vertexData[] = {
-		// Positions		 // Colors
-		 0.5f, -0.5f, 0.0f,	 1.0f, 0.0f, 0.0f,	// Right
-		-0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,	// Left
-		 0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f	// Top
-	};
+	// Create and use shader program.
+	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
+	myShader.useProgram();
 
 	// Generate buffers.
 	unsigned int VBO, VAO;
@@ -85,10 +89,6 @@ int main(int argc, char *argv[]) {
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-
-	// Create and use shader program.
-	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
-	myShader.useProgram();
 
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
