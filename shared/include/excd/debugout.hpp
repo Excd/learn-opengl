@@ -2,6 +2,7 @@
 * Custom ostringstream class that outputs to the debugger console on Windows.
 */
 #ifndef NDEBUG
+#pragma once
 #ifndef DEBUG_OUT_H
 #define DEBUG_OUT_H
 

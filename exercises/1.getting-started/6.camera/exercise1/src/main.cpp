@@ -1,24 +1,26 @@
 ﻿/*
-* LearnOpenGL Tutorial - Getting Started > Coordinate Systems > Exercise 1
-* https://learnopengl.com/Getting-started/Coordinate-Systems
-* Try experimenting with the FoV and aspect-ratio parameters of GLM's projection function.
-* See if you can figure out how those affect the perspective frustum.
+* LearnOpenGL Tutorial - Getting Started > Camera > Exercise 1
+* https://learnopengl.com/Getting-started/Camera
+* See if you can transform the camera class in such a way that it becomes a true fps
+* camera where you cannot fly; you can only look around while staying on the xz plane.
 */
 #include <cstdio>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #ifndef NDEBUG
 #include <debugout.hpp>
 #endif
 
 #include "shader/shader.hpp"
+#include "camera/camera.hpp"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xPosIn, double yPosIn);
+void scroll_callback(GLFWwindow *window, double xOffset, double yOffset);
 
 const unsigned int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const unsigned int TEXTURE_COUNT = 2, CUBE_COUNT = 10;
@@ -88,9 +90,16 @@ const glm::vec3 cubePositions[CUBE_COUNT] = {
 	glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
-// Initialize vertical FOV and aspect ratio.
-float fovY = 45.0f;
-float aspectRatio = static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT);
+// Timing.
+float deltaTime = 0.0f; // Time between current frame and last frame.
+float lastFrame = 0.0f;
+
+// Input variables.
+float lastX = WINDOW_WIDTH / 2, lastY = WINDOW_HEIGHT / 2;
+bool firstMouse = true;
+
+// Camera.
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main(int argc, char *argv[]) {
 	// Initialize GLFW.
@@ -114,6 +123,9 @@ int main(int argc, char *argv[]) {
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetCursorPosCallback(window, mouse_callback);
+	glfwSetScrollCallback(window, scroll_callback);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); // Disable cursor and capture it.
 
 	// Initialize glad.
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -126,7 +138,7 @@ int main(int argc, char *argv[]) {
 
 	// Configure OpenGL.
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	// Create and use shader program.
 	Shader myShader("resources/shaders/myShader.vert", "resources/shaders/myShader.frag");
@@ -187,28 +199,32 @@ int main(int argc, char *argv[]) {
 		stbi_image_free(data);
 	}
 
-	// Initialize coordinate system matrices.
-	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::mat4(1.0f);
-	// Translate and set view matrix.
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-	myShader.setMat4("view", view);
-
 	// Render loop.
 	while (!glfwWindowShouldClose(window)) {
+		// Calculate delta time.
+		float currentFrame = static_cast<float>(glfwGetTime());
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		processInput(window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		// Set projection (perspective) matrix.
-		projection = glm::perspective(glm::radians(fovY), aspectRatio, 0.1f, 100.0f);
+		// Update projection matrix.
+		glm::mat4 projection = glm::perspective(
+			glm::radians(camera.fovY),
+			static_cast<float>(WINDOW_WIDTH) / static_cast<float>(WINDOW_HEIGHT),
+			0.1f, 100.0f
+		);
 		myShader.setMat4("projection", projection);
+		// Update view matrix based on camera state.
+		glm::mat4 view = camera.getViewMatrix();
+		myShader.setMat4("view", view);
 
 		// Render cubes.
 		glBindVertexArray(VAO);
 		for (int i = 0; i < CUBE_COUNT; i++) {
 			// Translate and rotate each cube's model matrix.
-			model = glm::mat4(1.0f);
+			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
 			myShader.setMat4("model", model);
@@ -234,20 +250,46 @@ void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 
-	// Modify vertical FOV with up/down arrow keys.
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-		fovY += 1.0f;
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-		fovY -= 1.0f;
-
-	// Modify aspect ratio with left/right arrow keys.
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		aspectRatio += 0.01f;
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		aspectRatio -= 0.01f;
+	// Accelerate camera when holding shift.
+	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.accelerate();
+	// Camera movement (locked to xz plane).
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		camera.translate(glm::vec3(camera.zAxis.x, 0.0f, camera.zAxis.z), deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		camera.translate(-glm::vec3(camera.zAxis.x, 0.0f, camera.zAxis.z), deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		camera.translate(-camera.xAxis, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		camera.translate(camera.xAxis, deltaTime);
 }
 
 // Callback function for GLFW window resize.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
+}
+
+// Callback function for mouse movement.
+void mouse_callback(GLFWwindow *window, double xPosIn, double yPosIn) {
+	float xPos = static_cast<float>(xPosIn);
+	float yPos = static_cast<float>(yPosIn);
+
+	// Prevent sudden camera jump on first mouse movement.
+	if (firstMouse) {
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	// Rotate camera based on mouse movement.
+	camera.rotate(xPos - lastX, lastY - yPos);
+
+	// Update last mouse position.
+	lastX = xPos;
+	lastY = yPos;
+}
+
+// Callback function for mouse scroll.
+void scroll_callback(GLFWwindow *window, double xOffset, double yOffset) {
+	camera.zoom(static_cast<float>(yOffset));
 }
