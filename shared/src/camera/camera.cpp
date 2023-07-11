@@ -1,6 +1,7 @@
 #include "camera.hpp"
 
 namespace {
+	// Camera defaults.
 	const glm::vec3 UP = glm::vec3(0.0f, 1.0f, 0.0f);
 	const glm::vec3 FORWARD = glm::vec3(0.0f, 0.0f, -1.0f);
 	const glm::vec3 RIGHT = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -14,9 +15,9 @@ namespace {
 
 Camera::Camera() :
 	position(ORIGIN),
-	x(RIGHT),
-	y(UP),
-	z(FORWARD),
+	xAxis(RIGHT),
+	yAxis(UP),
+	zAxis(FORWARD),
 	yaw(DEFAULT_YAW),
 	pitch(DEFAULT_PITCH),
 	speed(DEFAULT_SPEED),
@@ -64,38 +65,32 @@ void Camera::accelerate(float factor) {
 }
 
 glm::mat4 Camera::getViewMatrix() {
-	// Calculate direction vectors.
-	glm::vec3 zaxis = glm::normalize(position - (position + z));
-	glm::vec3 xaxis = glm::normalize(glm::cross(UP, zaxis));
-	glm::vec3 yaxis = glm::cross(zaxis, xaxis);
-
-	// Create translation matrix.
+	// Create translation and rotation matrices from camera position and axes.
 	glm::mat4 translation = glm::mat4(1.0f);
 	translation[3][0] = -position.x;
 	translation[3][1] = -position.y;
 	translation[3][2] = -position.z;
-	// Create rotation matrix.
 	glm::mat4 rotation = glm::mat4(1.0f);
-	rotation[0][0] = xaxis.x;
-	rotation[1][0] = xaxis.y;
-	rotation[2][0] = xaxis.z;
-	rotation[0][1] = yaxis.x;
-	rotation[1][1] = yaxis.y;
-	rotation[2][1] = yaxis.z;
-	rotation[0][2] = zaxis.x;
-	rotation[1][2] = zaxis.y;
-	rotation[2][2] = zaxis.z;
+	rotation[0][0] = xAxis.x;
+	rotation[1][0] = xAxis.y;
+	rotation[2][0] = xAxis.z;
+	rotation[0][1] = yAxis.x;
+	rotation[1][1] = yAxis.y;
+	rotation[2][1] = yAxis.z;
+	rotation[0][2] = -zAxis.x;
+	rotation[1][2] = -zAxis.y;
+	rotation[2][2] = -zAxis.z;
 
-	// Return view matrix from translation and rotation.
+	// Return view matrix as translation and rotation product.
 	return rotation * translation;
 }
 
 void Camera::update() {
-	z = glm::normalize(glm::vec3(
+	zAxis = glm::normalize(glm::vec3(
 		cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
 		sin(glm::radians(pitch)),
 		sin(glm::radians(yaw)) * cos(glm::radians(pitch))
 	));
-	x = glm::normalize(glm::cross(z, UP));
-	y = glm::normalize(glm::cross(x, z));
+	xAxis = glm::normalize(glm::cross(zAxis, UP));
+	yAxis = glm::normalize(glm::cross(xAxis, zAxis));
 }

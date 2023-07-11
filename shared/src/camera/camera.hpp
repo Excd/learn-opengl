@@ -3,12 +3,13 @@
 #define CAMERA_H
 
 #include <glm/glm.hpp>
+
 class Camera {
 public:
 	glm::vec3 position;
-	glm::vec3 x;
-	glm::vec3 y;
-	glm::vec3 z;
+	glm::vec3 xAxis;
+	glm::vec3 yAxis;
+	glm::vec3 zAxis;
 	float yaw;
 	float pitch;
 	float speed;

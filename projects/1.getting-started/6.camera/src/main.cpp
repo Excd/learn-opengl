@@ -253,17 +253,17 @@ void processInput(GLFWwindow *window) {
 		camera.accelerate();
 	// Camera movement.
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.translate(camera.z, deltaTime);
+		camera.translate(camera.zAxis, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.translate(-camera.z, deltaTime);
+		camera.translate(-camera.zAxis, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.translate(-camera.x, deltaTime);
+		camera.translate(-camera.xAxis, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.translate(camera.x, deltaTime);
+		camera.translate(camera.xAxis, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		camera.translate(camera.y, deltaTime);
+		camera.translate(camera.yAxis, deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-		camera.translate(-camera.y, deltaTime);
+		camera.translate(-camera.yAxis, deltaTime);
 }
 
 // Callback function for GLFW window resize.
