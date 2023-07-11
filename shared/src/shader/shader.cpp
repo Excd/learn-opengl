@@ -7,9 +7,7 @@
 
 #include "shader.hpp"
 
-Shader::Shader() {
-	program = glCreateProgram();
-}
+Shader::Shader() : program(glCreateProgram()) {}
 
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) : Shader() {
 	compileProgram(vertexShaderPath, fragmentShaderPath);
